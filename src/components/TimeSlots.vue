@@ -1,110 +1,167 @@
 <template>
     <ul>
-        <li v-for="slot in timeslots" :key="slot.id" @click="book(slot.id)" v-if="slot.booked != true">{{ slot.time }}</li>
+        <li v-for="(slot, index) in timeslots" :key="index" @click="book(index)" v-if="slot.booked === false">{{ slot.time }} is booked {{slot.booked}}</li>
+        <button @click="log"> LOG </button>
     </ul>
 </template>
 
 <script>
 export default {
-    data: function() {
-        return {
-        timeslots: [
-            {
-                time: "00.00-02.00",
-                id: 0,
-                booked: false,
-                bookedBy: null
-            },
-            {
-                time: "02.00-04.00",
-                id: 1,
-                booked: false,
-                bookedBy: null
-            },
-            {
-                time: "04.00-06.00",
-                id: 2,
-                booked: false,
-                bookedBy: null
-            },
-            {
-                time: "06.00-08.00",
-                id: 3,
-                booked: false,
-                bookedBy: null
-            },
-            {
-                time: "08.00-10.00",
-                id: 4,
-                booked: false,
-                bookedBy: null
-            },
-            {
-                time: "10.00-12.00",
-                id: 5,
-                booked: false,
-                bookedBy: null
-            },
-            {
-                time: "12.00-14.00",
-                id: 6,
-                booked: false,
-                bookedBy: null
-            },
-            {
-                time: "14.00-16.00",
-                id: 7,
-                booked: false,
-                bookedBy: null
-            },
-            {
-                time: "16.00-18.00",
-                id: 8,
-                booked: false,
-                bookedBy: null
-            },
-            {
-                time: "20.00-22.00",
-                id: 9,
-                booked: false,
-                bookedBy: null
-            },
-            {
-                time: "22.00-00.00",
-                id: 10,
-                booked: false,
-                bookedBy: null
-            },
-
-        ],
-    }
-    },
-    methods: {
-        book(id) {
-            this.timeslots[id].booked = true;
-            this.timeslots[id].bookedBy = name
-            console.log(this.timeslots[id].time + "is booked by " + this.name + this.timeslots[id].booked)
+  data: function() {
+    return {
+      timeslots: [],
+      bookedTimeslots: [
+        {
+          time: "00.00-02.00",
+          id: 0,
+          booked: false,
+          bookedBy: null
+        },
+        {
+          time: "02.00-04.00",
+          id: 1,
+          booked: false,
+          bookedBy: null
+        },
+        {
+          time: "04.00-06.00",
+          id: 2,
+          booked: false,
+          bookedBy: null
+        },
+        {
+          time: "06.00-08.00",
+          id: 3,
+          booked: false,
+          bookedBy: null
+        },
+        {
+          time: "08.00-10.00",
+          id: 4,
+          booked: false,
+          bookedBy: null
+        },
+        {
+          time: "10.00-12.00",
+          id: 5,
+          booked: false,
+          bookedBy: null
+        },
+        {
+          time: "12.00-14.00",
+          id: 6,
+          booked: false,
+          bookedBy: null
+        },
+        {
+          time: "14.00-16.00",
+          id: 7,
+          booked: false,
+          bookedBy: null
+        },
+        {
+          time: "16.00-18.00",
+          id: 8,
+          booked: false,
+          bookedBy: null
+        },
+        {
+          time: "20.00-22.00",
+          id: 9,
+          booked: false,
+          bookedBy: null
+        },
+        {
+          time: "22.00-00.00",
+          id: 10,
+          booked: false,
+          bookedBy: null
         }
+      ],
+      availableTimes: []
+    };
+  },
+  methods: {
+    book(id) {
+      if (this.timeslots[id].booked === true) {
+        alert("This time is already booked!");
+      } else {
+        this.timeslots[id].booked = true;
+        this.timeslots[id].bookedBy = name;
+        console.log(
+          this.timeslots[id].time +
+            "is booked by " +
+            this.name +
+            this.timeslots[id].booked
+        );
+        let booking = {
+          booked: this.timeslots[id].booked,
+          time: this.timeslots[id].time,
+          bookedBy: this.timeslots[id].bookedBy,
+          id: id
+        };
+        this.$http
+          .get("https://room-booker-37ff4.firebaseio.com/data.json")
+          .then(
+            response => {
+              console.log(response.body.name);
+        this.$http
+          .patch("https://room-booker-37ff4.firebaseio.com/data/" + response.body.name, {"booked": true})
+          .then(
+            response => {
+              console.log(response);
+            },
+            error => {
+              console.log(error);
+            }
+          );
+            },
+            error => {
+              console.log(error);
+            }
+          );
+      }
     },
-    props: ["name"]
-}
+    getBookings() {
+      this.$http
+        .get("https://room-booker-37ff4.firebaseio.com/data.json")
+        .then(response => {
+          return response.json();
+        })
+        .then(data => {
+          const resultArray = [];
+          for (let key in data) {
+            resultArray.push(data[key]);
+          }
+          this.timeslots = resultArray;
+        });
+    },
+    log() {
+        console.log(this.timeslots)
+    }
+  },
+  props: ["name"],
+  created() {
+    this.getBookings();
+  }
+};
 </script>
 
 <style>
-    ul {
-        list-style-type: none;
-        padding: 50px;
-        display: flex;
-        background-color: red;
-    }
-    li {
-        height: 100px;
-        background-color: white;
-        margin: 20px;
-        justify-content: center;
-        align-content: center;
-        align-items: center;
-        justify-items: center;
-        width: 100%;
-    }
+ul {
+  list-style-type: none;
+  padding: 50px;
+  display: flex;
+  background-color: red;
+}
+li {
+  height: 100px;
+  background-color: white;
+  margin: 20px;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+  justify-items: center;
+  width: 100%;
+}
 </style>
