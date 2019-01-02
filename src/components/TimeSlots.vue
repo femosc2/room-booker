@@ -1,6 +1,7 @@
 <template>
     <ul>
-        <li v-for="(slot, index) in timeslots" :key="index" @click="book(index)" v-if="slot.booked === false">{{ slot.time }} is booked {{slot.booked}}</li>
+        <li v-for="(slot, index) in timeslots" :key="index" @click="book(index)" v-if="!slot.booked">{{ slot.time }} is booked</li>
+
         <button @click="log"> LOG </button>
     </ul>
 </template>
@@ -15,67 +16,67 @@ export default {
           time: "00.00-02.00",
           id: 0,
           booked: false,
-          bookedBy: null
+          bookedBy: ""
         },
         {
           time: "02.00-04.00",
           id: 1,
           booked: false,
-          bookedBy: null
+          bookedBy: ""
         },
         {
           time: "04.00-06.00",
           id: 2,
           booked: false,
-          bookedBy: null
+          bookedBy: ""
         },
         {
           time: "06.00-08.00",
           id: 3,
           booked: false,
-          bookedBy: null
+          bookedBy: ""
         },
         {
           time: "08.00-10.00",
           id: 4,
           booked: false,
-          bookedBy: null
+          bookedBy: ""
         },
         {
           time: "10.00-12.00",
           id: 5,
           booked: false,
-          bookedBy: null
+          bookedBy: ""
         },
         {
           time: "12.00-14.00",
           id: 6,
           booked: false,
-          bookedBy: null
+          bookedBy: ""
         },
         {
           time: "14.00-16.00",
           id: 7,
           booked: false,
-          bookedBy: null
+          bookedBy: ""
         },
         {
           time: "16.00-18.00",
           id: 8,
           booked: false,
-          bookedBy: null
+          bookedBy: ""
         },
         {
           time: "20.00-22.00",
           id: 9,
           booked: false,
-          bookedBy: null
+          bookedBy: ""
         },
         {
           time: "22.00-00.00",
           id: 10,
           booked: false,
-          bookedBy: null
+          bookedBy: ""
         }
       ],
       availableTimes: []
@@ -87,7 +88,7 @@ export default {
         alert("This time is already booked!");
       } else {
         this.timeslots[id].booked = true;
-        this.timeslots[id].bookedBy = name;
+        this.timeslots[id].bookedBy = this.name;
         console.log(
           this.timeslots[id].time +
             "is booked by " +
@@ -98,23 +99,12 @@ export default {
           booked: this.timeslots[id].booked,
           time: this.timeslots[id].time,
           bookedBy: this.timeslots[id].bookedBy,
-          id: id
         };
         this.$http
-          .get("https://room-booker-37ff4.firebaseio.com/data.json")
-          .then(
-            response => {
-              console.log(response.body.name);
-        this.$http
-          .patch("https://room-booker-37ff4.firebaseio.com/data/" + response.body.name, {"booked": true})
+          .put("https://room-booker-37ff4.firebaseio.com/data/" + id + ".json", booking)
           .then(
             response => {
               console.log(response);
-            },
-            error => {
-              console.log(error);
-            }
-          );
             },
             error => {
               console.log(error);
@@ -125,7 +115,7 @@ export default {
     getBookings() {
       this.$http
         .get("https://room-booker-37ff4.firebaseio.com/data.json")
-        .then(response => {
+        .then(response => { 
           return response.json();
         })
         .then(data => {
