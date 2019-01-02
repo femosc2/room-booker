@@ -1,4 +1,6 @@
-const axios = require("axios")
+const axios = require("axios");
+
+const Firebase = require("../src/firebase")
 
 const bookedTimeslots = [{
         time: "00.00-02.00",
@@ -62,25 +64,25 @@ const bookedTimeslots = [{
     }
 ];
 
-axios.delete("https://room-booker-37ff4.firebaseio.com/data.json")
+axios.delete("https://" + Firebase.firebase() + ".firebaseio.com/data.json")
     .then(
         response => {
-            console.log("response");
+            console.log("Successfull delete!");
         },
         error => {
-            console.log("error");
+            console.log("Faulty Delete!");
         }
     );
     
 setTimeout(function() {
     for (var i = 0; i < bookedTimeslots.length; i++) {
-        axios.put("https://room-booker-37ff4.firebaseio.com/data/" + i + ".json", bookedTimeslots[i])
+        axios.put("https://" + Firebase.firebase() + ".firebaseio.com/data/" + i + ".json", bookedTimeslots[i])
     .then(
         response => {
-            console.log(response);
+            console.log("Successfull PUT!");
         },
         error => {
-            console.log(error);
+            console.log("Faulty PUT!");
         }
     );
     }
