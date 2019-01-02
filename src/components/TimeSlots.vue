@@ -38,10 +38,10 @@ export default {
           )
           .then(
             response => {
-              console.log(response);
+              console.log("Successfull GET request!!");
             },
             error => {
-              console.log(error);
+              console.log("Faulty GET Request");
             }
           );
       }
