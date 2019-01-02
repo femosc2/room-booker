@@ -1,85 +1,16 @@
 <template>
     <ul>
-        <li v-for="(slot, index) in timeslots" :key="index" @click="book(index)" v-if="!slot.booked">{{ slot.time }} is booked</li>
-
-        <button @click="log"> LOG </button>
+        <li v-for="(slot, index) in timeslots" :key="index" @click="book(index)" v-if="!slot.booked">{{ slot.time }}</li>
     </ul>
 </template>
 
 <script>
+import Firebase from "../firebase.js"
+
 export default {
   data: function() {
     return {
-      timeslots: [],
-      bookedTimeslots: [
-        {
-          time: "00.00-02.00",
-          id: 0,
-          booked: false,
-          bookedBy: ""
-        },
-        {
-          time: "02.00-04.00",
-          id: 1,
-          booked: false,
-          bookedBy: ""
-        },
-        {
-          time: "04.00-06.00",
-          id: 2,
-          booked: false,
-          bookedBy: ""
-        },
-        {
-          time: "06.00-08.00",
-          id: 3,
-          booked: false,
-          bookedBy: ""
-        },
-        {
-          time: "08.00-10.00",
-          id: 4,
-          booked: false,
-          bookedBy: ""
-        },
-        {
-          time: "10.00-12.00",
-          id: 5,
-          booked: false,
-          bookedBy: ""
-        },
-        {
-          time: "12.00-14.00",
-          id: 6,
-          booked: false,
-          bookedBy: ""
-        },
-        {
-          time: "14.00-16.00",
-          id: 7,
-          booked: false,
-          bookedBy: ""
-        },
-        {
-          time: "16.00-18.00",
-          id: 8,
-          booked: false,
-          bookedBy: ""
-        },
-        {
-          time: "20.00-22.00",
-          id: 9,
-          booked: false,
-          bookedBy: ""
-        },
-        {
-          time: "22.00-00.00",
-          id: 10,
-          booked: false,
-          bookedBy: ""
-        }
-      ],
-      availableTimes: []
+      timeslots: []
     };
   },
   methods: {
@@ -98,10 +29,13 @@ export default {
         let booking = {
           booked: this.timeslots[id].booked,
           time: this.timeslots[id].time,
-          bookedBy: this.timeslots[id].bookedBy,
+          bookedBy: this.timeslots[id].bookedBy
         };
         this.$http
-          .put("https://room-booker-37ff4.firebaseio.com/data/" + id + ".json", booking)
+          .put(
+            "https://" + Firebase.firebase() + ".firebaseio.com/data/" + id + ".json",
+            booking
+          )
           .then(
             response => {
               console.log(response);
@@ -114,8 +48,8 @@ export default {
     },
     getBookings() {
       this.$http
-        .get("https://room-booker-37ff4.firebaseio.com/data.json")
-        .then(response => { 
+        .get("https://" + Firebase.firebase() + ".firebaseio.com/data.json")
+        .then(response => {
           return response.json();
         })
         .then(data => {
@@ -125,9 +59,6 @@ export default {
           }
           this.timeslots = resultArray;
         });
-    },
-    log() {
-        console.log(this.timeslots)
     }
   },
   props: ["name"],
@@ -141,11 +72,11 @@ export default {
 ul {
   list-style-type: none;
   padding: 50px;
-  display: flex;
+  display: block;
   background-color: red;
 }
 li {
-  height: 100px;
+  height: 50px;
   background-color: white;
   margin: 20px;
   justify-content: center;
